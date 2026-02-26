@@ -1,4 +1,10 @@
 .toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+
     position: fixed;
     top: 0;
     left: 0;
@@ -8,22 +14,22 @@
 }
 
 .controls {
-    display: inline-flex;
+    width:  80px;
+    height: 40px;
     border-radius: 15px;
     border-style: solid;
     border-width: 2px;
     border-color: rgb(20, 20, 20);
     box-shadow: 4px 8px 24px rgba(0, 0, 0, 0.2);
-    width:  80px;
-    height: 40px;
+
 }
 
 #drawing-canvas {
     display: block;
     position: fixed;
     margin: 0;
-    left: 550px;
-    top: 208px;
+    left: 17%;
+    top: 18%;
     border-radius: 15px;
     border-style: solid;
     border-width: 2px;

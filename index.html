@@ -8,11 +8,14 @@
         
         <div class="toolbar">
             <button id="clear-canvas-button" class="controls">Clear Canvas</button>
-            <input type="color", id="color-input" class="controls">
+            <input type="color" id="color-input" class="controls" autocomplete="off">
+            <input type="number" id="pen-size-input" class="controls" min="0" max="100" step="1" value="2" autocomplete="off" >
         </div>
         
-
-        <canvas id="drawing-canvas"></canvas>
+        <div class="canvas-container">
+            <canvas id="drawing-canvas"></canvas>
+        </div>
+        
 
     </body>
 
