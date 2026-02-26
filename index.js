@@ -26,7 +26,6 @@ function draw(e) {
     mousePosition = [e.offsetX, e.offsetY]
 
     if (!isDrawing) return;
-
     context.lineTo(mousePosition[0], mousePosition[1])
     context.stroke()
 }
@@ -40,6 +39,7 @@ function clearCanvas() {
 function setStrokeColor() {
     context.beginPath()
     context.strokeStyle = colorInput.value
+    context.fillStyle = colorInput.value
 }
 
 function setPenSize() {
@@ -76,18 +76,25 @@ function redo() {
 }
 
 
+
+
 //Event listeners
 
 //Mouse events
+mouseStartPosition = [null, null]
 canvas.addEventListener("mousedown", (e) => {
     isDrawing = true;
     saveSnapshot()
     context.beginPath()
     context.moveTo(e.offsetX, e.offsetY)
+    fillAfterTimeout = setTimeout(() => context.fillRect(mousePosition[0] - 1/2 * penSizeInput.value, mousePosition[1] - 1/2 * penSizeInput.value, penSizeInput.value, penSizeInput.value), 200) //.2 seconds
 });
 canvas.addEventListener("mouseup", () => isDrawing = false);
 canvas.addEventListener("mouseleave", () => isDrawing = false);
-canvas.addEventListener("mousemove", draw);
+canvas.addEventListener("mousemove", (e) => {
+    clearTimeout(fillAfterTimeout)                                  //temp solution for drawing in place, change to using mouse up and a distance check
+    draw(e)
+});
 
 //Controlpanel interactions
 clearButton.addEventListener("click", clearCanvas)
