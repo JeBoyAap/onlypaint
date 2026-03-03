@@ -1,7 +1,5 @@
 const canvas = document.getElementById("drawing-canvas")
 const context = canvas.getContext("2d")
-const canvas_height = 700
-const canvas_width = 1250
 const canvas_background_color = "#f0f0f0" //keep in hex
 
 //control panel inputs
@@ -19,9 +17,13 @@ let isDrawing = false;
 let pencilMode = true
 
 function initCanvas() {
-    canvas.height = canvas_height;
-    canvas.width = canvas_width;
+    resizeCanvas()
     canvas.style.background = canvas_background_color;
+}
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth * 0.7;
+    canvas.height = window.innerHeight * 0.75;
 }
 
 function draw(e) {
@@ -115,6 +117,9 @@ document.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.key === "z") undo();
     if (e.ctrlKey && e.key === "y") redo();
 });
+
+//other events
+window.addEventListener('resize', resizeCanvas);
 
 
 initCanvas()
