@@ -24,8 +24,12 @@ function initCanvas() {
 }
 
 function resizeCanvas() {
+    saveSnapshot()
     canvas.width = window.innerWidth * 0.7;
     canvas.height = window.innerHeight * 0.75;
+    undo() //loads last snapshot
+    setPenSize()
+    setStrokeColor()
 }
 
 function draw(e) {
@@ -135,5 +139,3 @@ window.addEventListener('resize', resizeCanvas);
 
 
 initCanvas()
-setPenSize()
-setStrokeColor()
