@@ -27,10 +27,10 @@ function resizeCanvas() {
 }
 
 function draw(e) {
-    mousePosition = [e.offsetX, e.offsetY]
+    pointerPosition = [e.offsetX, e.offsetY]
 
     if (!isDrawing) return;
-    context.lineTo(mousePosition[0], mousePosition[1])
+    context.lineTo(pointerPosition[0], pointerPosition[1])
     context.stroke()
 }
 
@@ -89,19 +89,19 @@ function redo() {
 
 //Event listeners
 
-//Mouse events
-mouseStartPosition = [null, null]
-canvas.addEventListener("mousedown", (e) => {
+//pointer events
+pointerStartPosition = [null, null]
+canvas.addEventListener("pointerdown", (e) => {
     isDrawing = true;
     saveSnapshot()
     context.beginPath()
     context.moveTo(e.offsetX, e.offsetY)
-    if (pencilMode == true) fillAfterTimeout = setTimeout(() => context.fillRect(mousePosition[0] - 1/2 * penSizeInput.value, mousePosition[1] - 1/2 * penSizeInput.value, penSizeInput.value, penSizeInput.value), 200) //.2 seconds
+    if (pencilMode == true) fillAfterTimeout = setTimeout(() => context.fillRect(pointerPosition[0] - 1/2 * penSizeInput.value, pointerPosition[1] - 1/2 * penSizeInput.value, penSizeInput.value, penSizeInput.value), 200) //.2 seconds
 });
-canvas.addEventListener("mouseup", () => isDrawing = false);
-canvas.addEventListener("mouseleave", () => isDrawing = false);
-canvas.addEventListener("mousemove", (e) => {
-    clearTimeout(fillAfterTimeout)                                  //temp solution for drawing in place, change to using mouse up and a distance check
+canvas.addEventListener("pointerup", () => isDrawing = false);
+canvas.addEventListener("pointerleave", () => isDrawing = false);
+canvas.addEventListener("pointermove", (e) => {
+    clearTimeout(fillAfterTimeout)                                  //temp solution for drawing in place, change to using pointer up and a distance check
     draw(e)
 });
 
