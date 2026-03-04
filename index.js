@@ -15,12 +15,13 @@ const redoButton = document.getElementById("redo-button")
 const downloadButton = document.getElementById("download-button")
 
 
-let isDrawing = false;
+let isDrawing = false
 let pencilMode = true
 
 function initCanvas() {
     resizeCanvas()
     setBackgroundColor()
+    setPencil()
 }
 
 function setBackgroundColor () {
@@ -63,6 +64,7 @@ function setPencil () {
     pencilMode = true
     setStrokeColor()
 }
+
 function setPenSize() {
     context.beginPath()
     context.lineWidth = penSizeInput.value
@@ -97,7 +99,6 @@ function redo() {
     context.putImageData(snapshot, 0, 0)
 }
 
-
 function downloadCanvas() {
     const link = document.createElement("a")
     link.download = "drawing.png"
@@ -110,6 +111,7 @@ function downloadCanvas() {
 //Event listeners
 
 //pointer events
+fillAfterTimeout = null
 pointerStartPosition = [null, null]
 canvas.addEventListener("pointerdown", (e) => {
     isDrawing = true;
