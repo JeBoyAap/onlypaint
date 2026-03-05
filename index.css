@@ -6,6 +6,10 @@ body {
     background-color: #e3e3e3;
 }
 
+.logo {
+    width: 15%;
+}
+
 .toolbar {
     display: inline-flex;
     flex-direction: column;
@@ -42,9 +46,9 @@ body {
 }
 
 .controls:active {
-    cursor: pointer;
-    opacity: 1;
-    scale: 1.05;
+    cursor: default;
+    opacity: 0.95;
+    scale: 1.08;
 }
 
 
