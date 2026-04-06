@@ -28,7 +28,7 @@ let pencilMode = true
 function initCanvas() {
     resizeCanvas()
     setBackgroundColor()
-    setPencil()
+    setCursor()
 }
 
 function setBackgroundColor () {
@@ -44,14 +44,6 @@ function resizeCanvas() {
     undo() //loads last snapshot
     setPenSize()
     setStrokeColor()
-}
-
-function draw(e) {
-    pointerPosition = [e.offsetX, e.offsetY]
-
-    if (!isDrawing && (!pencilMode || !eraserMode)) return;
-    context.lineTo(pointerPosition[0], pointerPosition[1])
-    context.stroke()
 }
 
 function clearCanvas() {
@@ -77,13 +69,13 @@ function setPenSize() {
 function setCursor () {
     pencilMode = false
     eraserMode = false
-    BucketMode = false
+    bucketMode = false
 }
 
 function setPencil () {
     pencilMode = true
     eraserMode = false
-    BucketMode = false
+    bucketMode = false
     setPenSize()
     setStrokeColor()
 }
@@ -91,7 +83,7 @@ function setPencil () {
 function setEraser() {
     pencilMode = false
     eraserMode = true
-    BucketMode = false
+    bucketMode = false
     setPenSize()
     context.strokeStyle = canvas_background_color
 }
@@ -99,21 +91,21 @@ function setEraser() {
 function setBrush() {
     pencilMode = true
     eraserMode = false
-    BucketMode = false
+    bucketMode = false
     context.lineWidth = 10
     setStrokeColor()
 }
 
-function setBucket() {          //todo
+function setBucket() {          
     pencilMode = false
     eraserMode = false
-    BucketMode = true
+    bucketMode = true
 }
 
 function setText() {            //todo
     pencilMode = false
     eraserMode = false
-    BucketMode = false
+    bucketMode = false
 }
 
 
@@ -149,6 +141,93 @@ function downloadCanvas() {
 }
 
 
+//drawing logic
+function draw(e) {
+    pointerPosition = [e.offsetX, e.offsetY]
+
+    if (!isDrawing && (!pencilMode || !eraserMode)) return;
+    context.lineTo(pointerPosition[0], pointerPosition[1])
+    context.stroke()
+}
+
+
+//bucket logic
+function bucketFill(e) {
+    saveSnapshot()
+
+    const startX = Math.floor(e.offsetX);
+    const startY = Math.floor(e.offsetY);
+    
+    const fillColor = hexToRgb(colorInput.value);
+
+    let imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+    let data = imageData.data
+
+    const startI = toArrayIndex(startX, startY)
+    const startColor = [data[startI], data[startI+1], data[startI+2]]
+
+    if (startColor.toString() == fillColor.toString()) return;
+
+    const queue = [startI]
+    const visited = new Set()
+
+    while (queue.length > 0) {
+        let currentPixelIndex = queue.pop()
+
+        if (visited.has(currentPixelIndex)) continue
+        visited.add(currentPixelIndex)
+
+        data = colorInPixel(data, currentPixelIndex, fillColor)
+
+        let currentX = (currentPixelIndex / 4) % canvas.width
+        let currentY = Math.floor(currentPixelIndex / 4 / canvas.width);
+
+        let currentNeighbours = findNeighbours(currentX, currentY, data, startColor)
+        queue.push(...currentNeighbours)
+    }
+
+    imageData.data = data
+    context.putImageData(imageData, 0, 0)
+}
+
+function findNeighbours(currentX, currentY, data, startColor) {
+    const neighbours = []
+    if ((currentX + 1 < canvas.width) && sameColor(data, currentX + 1, currentY, startColor)) //rechts
+        neighbours.push(toArrayIndex(currentX + 1, currentY));
+    if ((currentX - 1 > 0) && sameColor(data, currentX - 1, currentY, startColor)) //links
+        neighbours.push(toArrayIndex(currentX - 1, currentY));
+    if ((currentY + 1 < canvas.height) && sameColor(data, currentX, currentY + 1, startColor)) //boven
+        neighbours.push(toArrayIndex(currentX, currentY + 1));
+    if ((currentY - 1 > 0) && sameColor(data, currentX, currentY - 1, startColor)) //onder
+        neighbours.push(toArrayIndex(currentX, currentY - 1));
+
+    return neighbours
+}
+
+function sameColor(data, currentX, currentY, [r, g, b], tolerance = 100) {
+    const i = toArrayIndex(currentX, currentY);
+    return Math.abs(data[i]   - r) <= tolerance &&
+           Math.abs(data[i+1] - g) <= tolerance &&
+           Math.abs(data[i+2] - b) <= tolerance
+}
+
+function colorInPixel(data, pixelIndex, fillColor) {
+    data[pixelIndex] = fillColor[0]     //r
+    data[pixelIndex + 1] = fillColor[1] //g
+    data[pixelIndex + 2] = fillColor[2] //b
+    return data
+}
+
+function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3), 16)
+    const g = parseInt(hex.slice(3,5), 16)
+    const b = parseInt(hex.slice(5,7), 16)
+    return [r, g, b]
+}
+
+function toArrayIndex(x,y) {
+    return (y * canvas.width + x) * 4;
+}
 
 //Event listeners
 
@@ -163,7 +242,10 @@ canvas.addEventListener("pointerdown", (e) => {
     context.moveTo(e.offsetX, e.offsetY)
     if (pencilMode == true) fillAfterTimeout = setTimeout(() => context.fillRect(pointerPosition[0] - 1/2 * penSizeInput.value, pointerPosition[1] - 1/2 * penSizeInput.value, penSizeInput.value, penSizeInput.value), 200) //.2 seconds
 });
-canvas.addEventListener("pointerup", () => isDrawing = false);
+canvas.addEventListener("pointerup", (e) => {
+    isDrawing = false
+    if (bucketMode) bucketFill(e);
+});
 canvas.addEventListener("pointerleave", () => isDrawing = false);
 canvas.addEventListener("pointermove", (e) => {
     clearTimeout(fillAfterTimeout)                                  //temp solution for drawing in place, change to using pointer up and a distance check
