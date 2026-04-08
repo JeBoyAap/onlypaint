@@ -8,13 +8,12 @@ const pencileButton = document.getElementById("pencil-button")
 const eraserButton = document.getElementById("eraser-button")
 const brushButton = document.getElementById("brush-button")
 const bucketButton = document.getElementById("bucket-button")
-const textButton = document.getElementById("text-button")
+const pipetButton = document.getElementById("pipet-button")
 
 const clearButton = document.getElementById("clear-canvas-button")
 const colorInput = document.getElementById("color-input")
 
 const penSizeInput = document.getElementById("pen-size-input")
-
 
 const undoButton = document.getElementById("undo-button")
 const redoButton = document.getElementById("redo-button")
@@ -23,7 +22,8 @@ const downloadButton = document.getElementById("download-button")
 
 
 let isDrawing = false
-let pencilMode = true
+let currentMode = "cursor"
+
 
 function initCanvas() {
     resizeCanvas()
@@ -31,9 +31,9 @@ function initCanvas() {
     setCursor()
 }
 
-function setBackgroundColor () {
+function setBackgroundColor() {
     context.fillStyle = canvas_background_color
-    context.fillRect(0, 0, canvas.width, canvas.height)    
+    context.fillRect(0, 0, canvas.width, canvas.height)
 }
 
 function resizeCanvas() {
@@ -41,7 +41,7 @@ function resizeCanvas() {
     canvas.width = window.innerWidth * 0.7;
     canvas.height = window.innerHeight * 0.75;
     setBackgroundColor()
-    undo() //loads last snapshot
+    undo()
     setPenSize()
     setStrokeColor()
 }
@@ -65,51 +65,36 @@ function setPenSize() {
 }
 
 
-//Tools
-function setCursor () {
-    pencilMode = false
-    eraserMode = false
-    bucketMode = false
+// Mode management
+function setMode(mode) {
+    currentMode = mode
+
+    if (mode === "pencil") {
+        setPenSize()
+        setStrokeColor()
+    } else if (mode === "brush") {
+        context.lineWidth = 10
+        setStrokeColor()
+    } else if (mode === "eraser") {
+        setPenSize()
+        context.strokeStyle = canvas_background_color
+        context.fillStyle = canvas_background_color
+    }
 }
 
-function setPencil () {
-    pencilMode = true
-    eraserMode = false
-    bucketMode = false
-    setPenSize()
-    setStrokeColor()
-}
+function setCursor() { setMode("cursor") }
+function setPencil() { setMode("pencil") }
+function setEraser() { setMode("eraser") }
+function setBrush()  { setMode("brush")  }
+function setBucket() { setMode("bucket") }
+function setPipet()  { setMode("pipet")  }
 
-function setEraser() {
-    pencilMode = false
-    eraserMode = true
-    bucketMode = false
-    setPenSize()
-    context.strokeStyle = canvas_background_color
-}
-
-function setBrush() {
-    pencilMode = true
-    eraserMode = false
-    bucketMode = false
-    context.lineWidth = 10
-    setStrokeColor()
-}
-
-function setBucket() {          
-    pencilMode = false
-    eraserMode = false
-    bucketMode = true
-}
-
-function setText() {            //todo
-    pencilMode = false
-    eraserMode = false
-    bucketMode = false
+function isDrawingMode() {
+    return currentMode === "pencil" || currentMode === "eraser" || currentMode === "brush"
 }
 
 
-//undo redo fuctionality
+// Undo/redo functionality
 let undoStack = []
 let redoStack = []
 
@@ -141,23 +126,22 @@ function downloadCanvas() {
 }
 
 
-//drawing logic
+// Drawing logic
 function draw(e) {
     pointerPosition = [e.offsetX, e.offsetY]
-
-    if (!isDrawing && (!pencilMode || !eraserMode)) return;
+    if (!isDrawing || !isDrawingMode()) return
     context.lineTo(pointerPosition[0], pointerPosition[1])
     context.stroke()
 }
 
 
-//bucket logic
+// Bucket logic
 function bucketFill(e) {
     saveSnapshot()
 
     const startX = Math.floor(e.offsetX);
     const startY = Math.floor(e.offsetY);
-    
+
     const fillColor = hexToRgb(colorInput.value);
 
     let imageData = context.getImageData(0, 0, canvas.width, canvas.height)
@@ -166,7 +150,7 @@ function bucketFill(e) {
     const startI = toArrayIndex(startX, startY)
     const startColor = [data[startI], data[startI+1], data[startI+2]]
 
-    if (startColor.toString() == fillColor.toString()) return;
+    if (startColor.toString() === fillColor.toString()) return;
 
     const queue = [startI]
     const visited = new Set()
@@ -192,13 +176,13 @@ function bucketFill(e) {
 
 function findNeighbours(currentX, currentY, data, startColor) {
     const neighbours = []
-    if ((currentX + 1 < canvas.width) && sameColor(data, currentX + 1, currentY, startColor)) //rechts
+    if ((currentX + 1 < canvas.width) && sameColor(data, currentX + 1, currentY, startColor))
         neighbours.push(toArrayIndex(currentX + 1, currentY));
-    if ((currentX - 1 > 0) && sameColor(data, currentX - 1, currentY, startColor)) //links
+    if ((currentX - 1 >= 0) && sameColor(data, currentX - 1, currentY, startColor))
         neighbours.push(toArrayIndex(currentX - 1, currentY));
-    if ((currentY + 1 < canvas.height) && sameColor(data, currentX, currentY + 1, startColor)) //boven
+    if ((currentY + 1 < canvas.height) && sameColor(data, currentX, currentY + 1, startColor))
         neighbours.push(toArrayIndex(currentX, currentY + 1));
-    if ((currentY - 1 > 0) && sameColor(data, currentX, currentY - 1, startColor)) //onder
+    if ((currentY - 1 >= 0) && sameColor(data, currentX, currentY - 1, startColor))
         neighbours.push(toArrayIndex(currentX, currentY - 1));
 
     return neighbours
@@ -212,9 +196,9 @@ function sameColor(data, currentX, currentY, [r, g, b], tolerance = 100) {
 }
 
 function colorInPixel(data, pixelIndex, fillColor) {
-    data[pixelIndex] = fillColor[0]     //r
-    data[pixelIndex + 1] = fillColor[1] //g
-    data[pixelIndex + 2] = fillColor[2] //b
+    data[pixelIndex] = fillColor[0]
+    data[pixelIndex + 1] = fillColor[1]
+    data[pixelIndex + 2] = fillColor[2]
     return data
 }
 
@@ -225,47 +209,70 @@ function hexToRgb(hex) {
     return [r, g, b]
 }
 
-function toArrayIndex(x,y) {
+function toArrayIndex(x, y) {
     return (y * canvas.width + x) * 4;
 }
 
-//Event listeners
+//pipet logic
+function setPipetColor(e) {
+    const pixel = context.getImageData(e.offsetX, e.offsetY, 1, 1).data;
+    const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
 
-//pointer events
-fillAfterTimeout = null
-pointerStartPosition = [null, null]
+    colorInput.value = hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    }).join('');
+}
+
+
+// Event listeners
+
+let fillAfterTimeout = null
+let pointerPosition = [null, null]
+
 canvas.addEventListener("pointerdown", (e) => {
-    if (!pencilMode && !eraserMode) return;
+    if (currentMode === "pipet") {
+        setPipetColor(e)
+    }
+
+    if (!isDrawingMode()) return;
+
     isDrawing = true;
     saveSnapshot()
     context.beginPath()
     context.moveTo(e.offsetX, e.offsetY)
-    if (pencilMode == true) fillAfterTimeout = setTimeout(() => context.fillRect(pointerPosition[0] - 1/2 * penSizeInput.value, pointerPosition[1] - 1/2 * penSizeInput.value, penSizeInput.value, penSizeInput.value), 200) //.2 seconds
+    fillAfterTimeout = setTimeout(() => context.fillRect(
+        pointerPosition[0] - 1/2 * penSizeInput.value,
+        pointerPosition[1] - 1/2 * penSizeInput.value,
+        penSizeInput.value,
+        penSizeInput.value
+    ), 200)
 });
 canvas.addEventListener("pointerup", (e) => {
     isDrawing = false
-    if (bucketMode) bucketFill(e);
+    if (currentMode === "bucket") bucketFill(e);
 });
 canvas.addEventListener("pointerleave", () => isDrawing = false);
 canvas.addEventListener("pointermove", (e) => {
-    clearTimeout(fillAfterTimeout)                                  //temp solution for drawing in place, change to using pointer up and a distance check
+    clearTimeout(fillAfterTimeout)
     draw(e)
 });
 
-//Controlpanel interactions
-
+// Control panel
 cursorButton.addEventListener("click", setCursor)
 pencileButton.addEventListener("click", setPencil)
 eraserButton.addEventListener("click", setEraser)
 brushButton.addEventListener("click", setBrush)
 bucketButton.addEventListener("click", setBucket)
-textButton.addEventListener("click", setText)
-
+pipetButton.addEventListener("click", setPipet)
 
 clearButton.addEventListener("click", clearCanvas)
 colorInput.addEventListener("input", setStrokeColor)
 penSizeInput.addEventListener("input", setPenSize)
-
 
 undoButton.addEventListener("click", undo)
 redoButton.addEventListener("click", redo)
@@ -276,13 +283,10 @@ document.addEventListener("keydown", (e) => {
 
 downloadButton.addEventListener("click", downloadCanvas)
 
-//other events
 window.addEventListener('resize', resizeCanvas);
 
-
-//toggle tools
+// Toggle active tool button styling
 const toolButtons = document.querySelectorAll('.tools');
-
 toolButtons.forEach(button => {
     button.addEventListener('click', () => {
         toolButtons.forEach(btn => btn.classList.remove('active'));
