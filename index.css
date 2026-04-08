@@ -34,6 +34,7 @@ header {
     min-height: 0;
     gap: 12px;
     padding: 0 16px 16px 16px;
+    align-items: center;
 }
 
 
@@ -69,11 +70,11 @@ header {
 .sidebar {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
     align-items: center;
+    gap: 8px;
 
     flex-shrink: 0;
-    height: 100%;
+    height: 80%;
     width: clamp(110px, 8vw, 180px);
 
     background-color: #01afec;
@@ -136,29 +137,206 @@ header {
     transform: scale(1.08);
 }
 
-
-.controls {
+.shapes-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    align-content: start;
     width: 80%;
-    height: 36px;
+    gap: 6px;
+    padding: 6px;
+    flex-grow: 1;
+    max-height: 180px;
+    min-height: 60px;
 
+    background-color: white;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(20, 20, 20);
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.shapes {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    padding: 0;
+
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 4px;
+
+    cursor: pointer;
+    transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+.shapes img {
+    display: block;
+    margin: auto;
+    width: 100%;
+    pointer-events: none;
+}
+
+.shapes:hover {
+    opacity: 0.85;
+}
+
+.shapes.active {
+    background-color: #ee941f;
+    transform: scale(1.08);
+}
+
+.bottom-container {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 80%;
+    min-width: none;
+}
+
+.color-container {
+    display: flex;
+    flex: 1;
+
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    width: auto;
+    min-width: 0;
+
+    background-color: white;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(20, 20, 20);
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.color-input-button {
+    width: 100%;
+    height: 28px;
+    padding: 2px;
+    border-radius: 4px;
+    border: 2px solid rgb(20, 20, 20);
+    cursor: pointer;
+}
+
+.color-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    width: 100%;
+}
+
+.color-preset {
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    border-radius: 50%;
+    border: 2px solid rgb(20, 20, 20);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.color-preset:hover {
+    transform: scale(1.12);
+}
+
+.color-preset:active {
+    transform: scale(1.2);
+}
+
+.settings-container {
+    display: flex;
+    flex: 1;
+
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
+    width: auto;
+    min-width: 0;
+
+    background-color: white;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(20, 20, 20);
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.settings-button {
+    width: 100%;
+    height: 28px;
+    padding: 0;
+
+    background-color: white;
     border-radius: 4px;
     border-style: solid;
     border-width: 2px;
     border-color: rgb(20, 20, 20);
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
 
-    font-size: clamp(10px, 1vw, 13px);
+    font-size: clamp(8px, 0.8vw, 12px);
     cursor: pointer;
     transition: opacity 0.1s ease, transform 0.1s ease;
 }
 
-.controls:hover {
-    opacity: 0.9;
+.settings-button:hover {
+    opacity: 0.85;
 }
 
-.controls:active {
+.settings-button:active {
     transform: scale(1.06);
 }
+
+.settings-button img {
+    height: 60%;
+    width: auto;
+    pointer-events: none;
+}
+
+.undo-redo-container {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 80%;
+    justify-content: center;
+    flex: 1;
+    max-height: 60px;
+}
+
+.undo-redo {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+.undo-redo img {
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+}
+
+.undo-redo:hover {
+    opacity: 0.75;
+}
+
+.undo-redo:active {
+    transform: scale(1.1);
+}
+
+.controls img {
+    height: 60%;
+    width: auto;
+    pointer-events: none;
+}
+
+
 
 
 /* Voor telefoons */
@@ -167,6 +345,7 @@ header {
         flex-direction: column;
         padding: 0 8px 8px 8px;
         gap: 8px;
+        align-items: stretch;
     }
 
     .workspace {
@@ -177,6 +356,7 @@ header {
     .sidebar {
         width: 100%;
         height: auto;
+        min-height: 0;
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
@@ -201,20 +381,58 @@ header {
         flex-shrink: 0;
     }
 
-    .controls {
+    .shapes-container {
+        display: flex;
+        flex-direction: row;
         width: auto;
-        min-width: 50px;
-        height: 34px;
-        padding: 0 10px;
-        font-size: 11px;
+        flex-grow: 0;
+        max-height: none;
+        gap: 6px;
+        padding: 6px;
     }
 
-    #color-input.controls {
+    .shapes {
         width: 38px;
-        padding: 2px;
+        height: 38px;
+        flex-shrink: 0;
     }
 
-    #pen-size-input.controls {
-        width: 55px;
+    .bottom-container {
+        width: auto;
+        flex-direction: row;
+    }
+
+    .color-container,
+    .settings-container {
+        padding: 6px;
+        gap: 4px;
+    }
+
+    .color-grid {
+        gap: 3px;
+    }
+
+    .color-preset {
+        width: 18px;
+        height: 18px;
+    }
+
+    .color-input-button {
+        height: 22px;
+    }
+
+    .settings-button {
+        height: 22px;
+    }
+
+    .undo-redo-container {
+        flex: 0;
+        width: auto;
+        max-height: none;
+    }
+
+    .undo-redo img {
+        width: 26px;
+        height: 26px;
     }
 }

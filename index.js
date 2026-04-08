@@ -338,4 +338,14 @@ toolButtons.forEach(button => {
     });
 });
 
+// Preset colors selecting
+document.querySelectorAll('.color-preset').forEach(button => {
+    button.addEventListener('click', () => {
+        colorInput.value = rgbToHex(
+            ...button.style.backgroundColor.match(/\d+/g).map(Number)
+        )
+        setStrokeColor()
+    })
+})
+
 initCanvas()

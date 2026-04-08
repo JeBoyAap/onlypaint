@@ -32,16 +32,43 @@
                 </div>
 
                 <div class="shapes-container">
-                    <button id="line-button" class="shapes">Line</button>
-                    <button id="rect-button" class="shapes">Rect</button>
+                    <button id="line-button" class="shapes"> <img src="images/Line.png" alt=""> </button>
+                    <button id="rect-button" class="shapes"> <img src="images/Rect.png" alt=""> </button>
                 </div>
 
-                <button id="clear-canvas-button" class="controls">Clear Canvas</button>
-                <input type="color" id="color-input" class="controls" autocomplete="off">
-                <input type="number" id="pen-size-input" class="controls" min="1" max="100" step="1" value="4" autocomplete="off" >
-                <button id="undo-button" class="controls">Undo</button>
-                <button id="redo-button" class="controls">Redo</button>
-                <button id="download-button" class="controls">Download</button>
+                <div class="bottom-container">
+                    <div class="color-container">
+                        <input type="color" id="color-input" class="color-input-button">
+                        <div class="color-grid">
+                            <button class="color-preset" style="background-color: #000000"></button>
+                            <button class="color-preset" style="background-color: #ffffff"></button>
+                            <button class="color-preset" style="background-color: #808080"></button>
+                            <button class="color-preset" style="background-color: #c0c0c0"></button>
+                            <button class="color-preset" style="background-color: #ff0000"></button>
+                            <button class="color-preset" style="background-color: #ff6600"></button>
+                            <button class="color-preset" style="background-color: #ffff00"></button>
+                            <button class="color-preset" style="background-color: #00ff00"></button>
+                            <button class="color-preset" style="background-color: #00ffff"></button>
+                            <button class="color-preset" style="background-color: #0000ff"></button>
+                            <button class="color-preset" style="background-color: #ff00ff"></button>
+                            <button class="color-preset" style="background-color: #ff69b4"></button>
+                            <button class="color-preset" style="background-color: #8b4513"></button>
+                            <button class="color-preset" style="background-color: #228b22"></button>
+                        </div>
+                    </div>
+
+                
+                    <div class="settings-container">
+                        <input type="number" id="pen-size-input" class="settings-button" min="1" max="100" step="1" value="4" autocomplete="off">
+                        <button id="clear-canvas-button" class="settings-button"> <img src="images/Clear.png" alt=""> </button>
+                        <button id="download-button" class="settings-button"> <img src="images/Download.png" alt=""> </button>
+                    </div>
+                </div>
+                
+                <div class="undo-redo-container">
+                    <button id="undo-button" class="undo-redo"> <img src="images/Undo.png" alt=""> </button>
+                    <button id="redo-button" class="undo-redo"> <img src="images/Redo.png" alt=""> </button>
+                </div>
             </div>
         </div>
 
