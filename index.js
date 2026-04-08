@@ -260,19 +260,18 @@ let fillAfterTimeout = null
 let pointerPosition = [null, null]
 
 canvas.addEventListener("pointerdown", (e) => {
+    startX = e.offsetX;
+    startY = e.offsetY;
+    
     if (currentMode === "pipet") {
         setPipetColor(e)
     }
 
     if (currentMode === "line") {
-        startX = e.offsetX;
-        startY = e.offsetY;
         lineSnapshot = context.getImageData(0, 0, canvas.width, canvas.height);
     }
 
     if (currentMode === "rect") {
-        startX = e.offsetX;
-        startY = e.offsetY;
         rectSnapshot = context.getImageData(0, 0, canvas.width, canvas.height);
     }
 
@@ -282,12 +281,17 @@ canvas.addEventListener("pointerdown", (e) => {
     saveSnapshot()
     context.beginPath()
     context.moveTo(e.offsetX, e.offsetY)
-    fillAfterTimeout = setTimeout(() => context.fillRect(
-        pointerPosition[0] - 1/2 * penSizeInput.value,
-        pointerPosition[1] - 1/2 * penSizeInput.value,
-        penSizeInput.value,
-        penSizeInput.value
-    ), 200)
+    fillAfterTimeout = setTimeout(() => {
+        const distance = Math.hypot(pointerPosition[0] - startX, pointerPosition[1] - startY)
+        if (distance <= 1) {
+            context.fillRect(
+                startX - penSizeInput.value / 2,
+                startY - penSizeInput.value / 2,
+                penSizeInput.value,
+                penSizeInput.value
+            )
+        }
+    }, 200)
 });
 canvas.addEventListener("pointerup", (e) => {
     isDrawing = false
@@ -295,6 +299,7 @@ canvas.addEventListener("pointerup", (e) => {
 });
 canvas.addEventListener("pointerleave", () => isDrawing = false);
 canvas.addEventListener("pointermove", (e) => {
+    pointerPosition = [e.offsetX, e.offsetY]
     clearTimeout(fillAfterTimeout)
     draw(e)
 });
@@ -338,7 +343,7 @@ toolButtons.forEach(button => {
     });
 });
 
-// Preset colors selecting
+// Preset colors
 document.querySelectorAll('.color-preset').forEach(button => {
     button.addEventListener('click', () => {
         colorInput.value = rgbToHex(

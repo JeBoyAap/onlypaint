@@ -338,101 +338,118 @@ header {
 
 
 
-
 /* Voor telefoons */
 @media (orientation: portrait) {
     .main-container {
         flex-direction: column;
+        align-items: stretch;
         padding: 0 8px 8px 8px;
         gap: 8px;
-        align-items: stretch;
     }
 
     .workspace {
         flex: 1;
         min-height: 0;
+        width: 100%;
     }
 
     .sidebar {
+        flex-direction: row;
         width: 100%;
         height: auto;
-        min-height: 0;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        padding: 8px;
-        gap: 6px;
         flex-shrink: 0;
-        overflow-y: visible;
         overflow-x: auto;
+        overflow-y: hidden;
+        padding: 8px 12px;
+        gap: 10px;
+        align-items: center;
+        border-radius: 8px;
     }
 
     .tools-container {
-        display: flex;
-        flex-direction: row;
+        display: grid;
+        grid-template-columns: repeat(3, 42px);
+        grid-template-rows: repeat(2, 42px);
         width: auto;
+        flex-shrink: 0;
         gap: 6px;
     }
 
     .tools {
-        width: 38px;
-        height: 38px;
-        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
     }
 
     .shapes-container {
-        display: flex;
-        flex-direction: row;
+        display: grid;
+        grid-template-columns: repeat(2, 42px);
+        grid-template-rows: repeat(1, 42px);
         width: auto;
+        height: auto;
+        min-height: unset;
+        max-height: unset;
         flex-grow: 0;
-        max-height: none;
-        gap: 6px;
-        padding: 6px;
+        flex-shrink: 0;
+        padding: 4px;
+        gap: 4px;
+        align-content: center;
     }
 
     .shapes {
-        width: 38px;
-        height: 38px;
-        flex-shrink: 0;
+        width: 42px;
+        height: 42px;
     }
 
     .bottom-container {
-        width: auto;
         flex-direction: row;
+        width: auto;
+        flex-shrink: 0;
+        gap: 8px;
+        align-items: stretch;
     }
 
-    .color-container,
-    .settings-container {
+    .color-container {
+        width: auto;
+        flex: unset;
         padding: 6px;
         gap: 4px;
     }
 
+    .color-input-button {
+        width: 100%;
+        height: 20px;
+    }
+
     .color-grid {
+        grid-template-columns: repeat(7, 16px);
         gap: 3px;
     }
 
     .color-preset {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
     }
 
-    .color-input-button {
-        height: 22px;
+    .settings-container {
+        width: auto;
+        flex: unset;
+        padding: 6px;
+        gap: 4px;
+        justify-content: center;
     }
 
     .settings-button {
-        height: 22px;
+        width: 42px;
+        height: 26px;
     }
 
     .undo-redo-container {
-        flex: 0;
+        flex-direction: column;
         width: auto;
-        max-height: none;
-    }
-
-    .undo-redo img {
-        width: 26px;
-        height: 26px;
+        max-height: unset;
+        flex: 0;
+        flex-shrink: 0;
+        justify-content: center;
+        gap: 6px;
     }
 }
