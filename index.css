@@ -162,7 +162,7 @@ header {
 
 
 /* Voor telefoons */
-@media (max-width: 600px) {
+@media (orientation: portrait) {
     .main-container {
         flex-direction: column;
         padding: 0 8px 8px 8px;
