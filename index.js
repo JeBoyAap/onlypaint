@@ -3,6 +3,7 @@ const context = canvas.getContext("2d")
 const canvas_background_color = "#f0f0f0" //keep in hex
 
 //control panel inputs
+    //tools
 const cursorButton = document.getElementById("cursor-button")
 const pencileButton = document.getElementById("pencil-button")
 const eraserButton = document.getElementById("eraser-button")
@@ -10,6 +11,11 @@ const brushButton = document.getElementById("brush-button")
 const bucketButton = document.getElementById("bucket-button")
 const pipetButton = document.getElementById("pipet-button")
 
+    //shapes
+const lineButton = document.getElementById("line-button")
+const rectButton = document.getElementById("rect-button")
+
+    //other
 const clearButton = document.getElementById("clear-canvas-button")
 const colorInput = document.getElementById("color-input")
 
@@ -23,7 +29,7 @@ const downloadButton = document.getElementById("download-button")
 
 let isDrawing = false
 let currentMode = "cursor"
-
+let startX, startY, lineSnapshot, rectSnapshot;
 
 function initCanvas() {
     resizeCanvas()
@@ -88,9 +94,11 @@ function setEraser() { setMode("eraser") }
 function setBrush()  { setMode("brush")  }
 function setBucket() { setMode("bucket") }
 function setPipet()  { setMode("pipet")  }
+function setLine() { setMode("line") }
+function setRect() { setMode("rect") }
 
 function isDrawingMode() {
-    return currentMode === "pencil" || currentMode === "eraser" || currentMode === "brush"
+    return currentMode === "pencil" || currentMode === "eraser" || currentMode === "brush" || currentMode === "line" || currentMode === "rect"
 }
 
 
@@ -128,9 +136,26 @@ function downloadCanvas() {
 
 // Drawing logic
 function draw(e) {
-    pointerPosition = [e.offsetX, e.offsetY]
     if (!isDrawing || !isDrawingMode()) return
-    context.lineTo(pointerPosition[0], pointerPosition[1])
+
+    if (currentMode === "line") {
+        context.putImageData(lineSnapshot, 0, 0)  // restore clean canvas
+        context.beginPath()
+        context.moveTo(startX, startY)
+        context.lineTo(e.offsetX, e.offsetY)
+        context.stroke()
+        return
+    }
+
+    if (currentMode === "rect") {
+        context.putImageData(rectSnapshot, 0, 0)  // restore clean canvas
+        context.beginPath()
+        context.rect(startX, startY, e.offsetX - startX, e.offsetY - startY)
+        context.stroke()
+        return
+    }
+
+    context.lineTo(e.offsetX, e.offsetY)
     context.stroke()
 }
 
@@ -213,6 +238,7 @@ function toArrayIndex(x, y) {
     return (y * canvas.width + x) * 4;
 }
 
+
 //pipet logic
 function setPipetColor(e) {
     const pixel = context.getImageData(e.offsetX, e.offsetY, 1, 1).data;
@@ -230,13 +256,24 @@ function rgbToHex(r, g, b) {
 
 
 // Event listeners
-
 let fillAfterTimeout = null
 let pointerPosition = [null, null]
 
 canvas.addEventListener("pointerdown", (e) => {
     if (currentMode === "pipet") {
         setPipetColor(e)
+    }
+
+    if (currentMode === "line") {
+        startX = e.offsetX;
+        startY = e.offsetY;
+        lineSnapshot = context.getImageData(0, 0, canvas.width, canvas.height);
+    }
+
+    if (currentMode === "rect") {
+        startX = e.offsetX;
+        startY = e.offsetY;
+        rectSnapshot = context.getImageData(0, 0, canvas.width, canvas.height);
     }
 
     if (!isDrawingMode()) return;
@@ -263,6 +300,7 @@ canvas.addEventListener("pointermove", (e) => {
 });
 
 // Control panel
+    //tools
 cursorButton.addEventListener("click", setCursor)
 pencileButton.addEventListener("click", setPencil)
 eraserButton.addEventListener("click", setEraser)
@@ -270,6 +308,11 @@ brushButton.addEventListener("click", setBrush)
 bucketButton.addEventListener("click", setBucket)
 pipetButton.addEventListener("click", setPipet)
 
+    //shapes
+lineButton.addEventListener("click", setLine)
+rectButton.addEventListener("click", setRect)
+
+    //other
 clearButton.addEventListener("click", clearCanvas)
 colorInput.addEventListener("input", setStrokeColor)
 penSizeInput.addEventListener("input", setPenSize)
@@ -285,8 +328,9 @@ downloadButton.addEventListener("click", downloadCanvas)
 
 window.addEventListener('resize', resizeCanvas);
 
+
 // Toggle active tool button styling
-const toolButtons = document.querySelectorAll('.tools');
+const toolButtons = document.querySelectorAll('.tools, .shapes');
 toolButtons.forEach(button => {
     button.addEventListener('click', () => {
         toolButtons.forEach(btn => btn.classList.remove('active'));
