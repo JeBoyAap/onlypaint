@@ -44,8 +44,12 @@ function setBackgroundColor() {
 
 function resizeCanvas() {
     saveSnapshot()
-    canvas.width = window.innerWidth * 0.7;
-    canvas.height = window.innerHeight * 0.75;
+
+    const aspectRatio = screen.width / screen.height
+
+    canvas.width = window.innerWidth * 0.8;
+    canvas.height = canvas.width / aspectRatio;
+
     setBackgroundColor()
     undo()
     setPenSize()
